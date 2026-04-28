@@ -7,14 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const translateBtn = document.getElementById('translate-btn');
     const loader = document.getElementById('loader');
 
-    // Action buttons
+    
     const btnCopySource = document.getElementById('copy-source');
     const btnCopyTarget = document.getElementById('copy-target');
     const btnListenSource = document.getElementById('listen-source');
     const btnListenTarget = document.getElementById('listen-target');
 
-    // Language Mapping for TTS
-    // Adjusting a bit to match standard speech synthesis locales when possible
+    
     const ttsLangMap = {
         'en': 'en-US',
         'es': 'es-ES',
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'ar': 'ar-SA'
     };
 
-    // Swap Languages
+    
     swapBtn.addEventListener('click', () => {
         const tempLang = sourceLang.value;
         sourceLang.value = targetLang.value;
@@ -40,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sourceText.value = targetText.value;
         targetText.value = tempText;
 
-        // Add a small rotation animation programmatically if CSS isn't enough
+        
         swapBtn.style.transform = 'rotate(180deg)';
         setTimeout(() => {
             swapBtn.style.transition = 'none';
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     });
 
-    // Translate Logic
+    
     const translateText = async () => {
         let text = sourceText.value.trim();
         if (!text) {
@@ -63,10 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const tl = targetLang.value;
         
         loader.classList.remove('hidden');
-        targetText.value = ''; // Clear target while loading
+        targetText.value = ''; 
 
         try {
-            // Unofficial Google Translate API endpoint
+            
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
             const response = await fetch(url);
             
@@ -76,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const data = await response.json();
             
-            // data[0] contains array of translated sentences
+            
             let translated = '';
             if (data && data[0]) {
                 data[0].forEach(segment => {
@@ -96,14 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     translateBtn.addEventListener('click', translateText);
 
-    // Auto-translate on Ctrl+Enter
+    
     sourceText.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'Enter') {
             translateText();
         }
     });
 
-    // Copy to clipboard
+    
     const copyToClipboard = async (text, btnElement) => {
         if (!text) return;
         try {
@@ -111,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const icon = btnElement.querySelector('i');
             const originalClass = icon.className;
             
-            // Visual feedback
+            
             icon.className = 'fa-solid fa-check';
             btnElement.classList.add('active');
             
@@ -128,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCopySource.addEventListener('click', () => copyToClipboard(sourceText.value, btnCopySource));
     btnCopyTarget.addEventListener('click', () => copyToClipboard(targetText.value, btnCopyTarget));
 
-    // Text to Speech
+    
     const speakText = (text, lang, btnElement) => {
         if (!text) return;
         
@@ -139,16 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const synth = window.speechSynthesis;
         
-        // Cancel any currently speaking text to restart
+        
         if (synth.speaking) {
             synth.cancel();
         }
 
         const utterance = new SpeechSynthesisUtterance(text);
-        // Map the selected language to an appropriate speech synthesis locale
+        
         utterance.lang = ttsLangMap[lang] || lang; 
         
-        // You can tweak pitch and rate here if desired
+        
         utterance.pitch = 1;
         utterance.rate = 1;
 
@@ -156,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         utterance.onstart = () => {
             btnElement.classList.add('active');
-            // Change icon to indicate speaking (e.g. from volume-high to something else if desired)
+            
             icon.style.transform = 'scale(1.2)';
         };
 
